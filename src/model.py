@@ -105,7 +105,7 @@ conv_activation = input("Enter Conv activation (relu/tanh/elu): ").lower()
 dense_activation = input("Enter Dense activation (relu/tanh/elu): ").lower()
 output_activation = input("Enter Output activation (sigmoid/softmax): ").lower()
 
-#Validate Input
+#Validate Inputs
 valid_hidden = ['relu', 'tanh', 'elu']
 valid_output = ['sigmoid', 'softmax']
 
