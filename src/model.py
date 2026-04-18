@@ -152,7 +152,7 @@ model = tf.keras.Sequential([
 
 # Compile the model
 # Adam is used as the optimizer
-# Binary crossentropy is appropriate for two-class classification
+# loss function is choosen based on the activation function
 # Accuracy is used to monitor training performance
 model.compile(
     optimizer="adam",
