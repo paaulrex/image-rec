@@ -16,7 +16,7 @@ BATCH_SIZE = 16
 SEED = 123
 
 # Define dataset path
-dataset_path = "C:\\Users\\Ramya\\AI 570 DL\\Project\\dataset"
+dataset_path = "..\\dataset"
 
 # Lists to store image sizes and classification results
 sizes = []
@@ -52,7 +52,7 @@ size_counts = Counter(sizes)
 # validation_split=0.2 means 80% training and 20% validation
 # color_mode="grayscale" loads images with one channel instead of RGB
 train_ds = tf.keras.utils.image_dataset_from_directory(
-    "C:\\Users\\Ramya\\AI 570 DL\\Project\\dataset",
+    dataset_path,
     validation_split=0.2,
     subset="training",
     seed=SEED,
@@ -63,7 +63,7 @@ train_ds = tf.keras.utils.image_dataset_from_directory(
 
 # Create the validation dataset using the same split settings
 val_ds = tf.keras.utils.image_dataset_from_directory(
-    "C:\\Users\\Ramya\\AI 570 DL\\Project\\dataset",
+    dataset_path,
     validation_split=0.2,
     subset="validation",
     seed=SEED,
