@@ -66,5 +66,17 @@ def main():
   plt.title("Confusion Matrix")
   plt.show()
 
+  image_files = []
+  for class_name in class_names:
+    class_dir = os.path.join(dataset, class_name)
+    for fname in sorted(os.listdir(class_dir)):
+      image_files.append((os.path.join(class_dir, fname), class_name))
+
+  print("\nMisclassified images:")
+  for idx, (true, pred) in enumerate(zip(y_true, y_pred)):
+    if true != pred:
+      path, _ = image_files[idx]
+      print(f"  {path} | True: {class_names[true]} | Pred: {class_names[pred]}")
+
 if __name__ == "__main__":
   main()
