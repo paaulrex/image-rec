@@ -2,7 +2,10 @@ import tensorflow as tf
 import os
 import argparse
 
-dataset = "../dataset"
+_src_dir = os.path.dirname(os.path.abspath(__file__))
+_root_dir = os.path.dirname(_src_dir)
+
+dataset = os.path.join(_root_dir, "dataset")
 IMG_SIZE = (224, 224)
 BATCH_SIZE = 16
 SEED = 123
