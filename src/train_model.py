@@ -44,7 +44,6 @@ def main():
 
   parser = argparse.ArgumentParser()
   parser.add_argument("--data", default=dataset, help="Path to training dataset folder")
-  parser.add_argument("--output", default="../models/tumor_cnn.keras", help="Path to save trained model")
   parser.add_argument("--epoch", type=int, default=15)
   args = parser.parse_args()
 
