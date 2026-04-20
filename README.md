@@ -141,7 +141,6 @@ python train_model.py
 **Optional CLI arguments:**
 ```
 --data   Path to training dataset (default: ../dataset)
---output Path to save model (default: ../models/*.keras)
 --epoch  Number of epochs (default: 15)
 ```
 
