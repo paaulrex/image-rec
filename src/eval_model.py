@@ -82,6 +82,7 @@ def main():
       path, _ = image_files[idx]
       misclassified.append((path, true, pred))
       print(f"  {path} | True: {class_names[true]} | Pred: {class_names[pred]}")
+  print(f"Total Misclassified images: {len(misclassified)}")
 
   if misclassified:
     cols = 4
