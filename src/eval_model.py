@@ -3,8 +3,12 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, classification_report
+import math
 
-dataset = "../eval_dataset"
+_src_dir = os.path.dirname(os.path.abspath(__file__))
+_root_dir = os.path.dirname(_src_dir)
+
+dataset = os.path.join(_root_dir, "eval_dataset")
 IMG_SIZE = (224, 224)
 BATCH_SIZE = 16
 
@@ -72,11 +76,27 @@ def main():
     for fname in sorted(os.listdir(class_dir)):
       image_files.append((os.path.join(class_dir, fname), class_name))
 
-  print("\nMisclassified images:")
+  misclassified = []
   for idx, (true, pred) in enumerate(zip(y_true, y_pred)):
     if true != pred:
       path, _ = image_files[idx]
+      misclassified.append((path, true, pred))
       print(f"  {path} | True: {class_names[true]} | Pred: {class_names[pred]}")
+
+  if misclassified:
+    cols = 4
+    rows = math.ceil(len(misclassified) / cols)
+    plt.figure(figsize=(cols * 3, rows * 3))
+    plt.suptitle("Misclassified Images")
+    for i, (path, true, pred) in enumerate(misclassified):
+      plt.subplot(rows, cols, i + 1)
+      img = tf.keras.preprocessing.image.load_img(path, target_size=IMG_SIZE, color_mode="grayscale")
+      plt.imshow(img, cmap="gray")
+      plt.title(f"T: {class_names[true]}\nP:{class_names[pred]}", fontsize=8)
+      plt.axis("off")
+
+  plt.tight_layout()
+  plt.show()
 
 if __name__ == "__main__":
   main()
