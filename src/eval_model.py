@@ -27,7 +27,7 @@ def main():
   eval_ds = eval_ds.map(lambda x, y: (norm(x), y))
   eval_ds = eval_ds.cache().prefetch(buffer_size=tf.data.AUTOTUNE)
 
-  models_dir = "../models"
+  models_dir = os.path.join(_root_dir, "models")
   model_files = [f for f in os.listdir(models_dir) if f.endswith(".keras") or f.endswith(".h5")]
 
   if not model_files:
