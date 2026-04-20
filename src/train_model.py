@@ -6,6 +6,7 @@ _src_dir = os.path.dirname(os.path.abspath(__file__))
 _root_dir = os.path.dirname(_src_dir)
 
 dataset = os.path.join(_root_dir, "dataset")
+model_dir = os.path.join(_root_dir, "models")
 IMG_SIZE = (224, 224)
 BATCH_SIZE = 16
 SEED = 123
@@ -113,8 +114,8 @@ def main():
   print(f"Final val loss:       {history.history['val_loss'][-1]:.4f}")
 
   model_name = f"tumor_cnn_{conv_act}_{dense_act}_{out_act}.keras"
-  output_path = os.path.join(os.path.dirname(args.output), model_name)
-  os.makedirs(os.path.dirname(output_path), exist_ok=True)
+  output_path = os.path.join(model_dir, model_name)
+  os.makedirs(model_dir, exist_ok=True)
   model.save(output_path)
   print(f"Model saved to {output_path}")
 
