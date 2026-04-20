@@ -1,19 +1,23 @@
 # Brain Tumor MRI Detection using Convolutional Neural Networks
 ## Overview
 This project implements a Convolutional Neural Network (CNN) to classify brain MRI images as either:
+- Tumor present (`yes`)
+- No tumor present (`no`)
 
-Tumor present (yes)
-No tumor (no)
+The training dataset contains 4,600 grayscale MRI images. A separate eval dataset (the original 253-image set) is used for final model evaluation
 
-The model is trained using a small MRI dataset and demonstrates a complete machine learning workflow including:
+The project covers a complete deep learning workflow:
+- Dataset preprocessing and normalization
+- Model training with data augmentation and class weighting
+- Validation during training
+- Post-training evaluation using classification metrics and confusion matrix
+- Misclassified image analysis
 
-dataset preprocessing
-model training
-validation
-evaluation using classification metrics
-prediction on new images
+Three source scripts handle distinct stages of the pipeline (`model.py`, `train_model.py`, `eval_model.py`), with an exploratory Jupyter notebook also available.
 
 The goal of the project is to explore how deep learning models can be applied to **medical image classification tasks**.
+
+> Intended for academic and educational purposes only - not for clinical use.
 
 ## Dataset
 There are two datasets that are in this repo, a training dataset under `/dataset` and evaluation dataset under `/eval_dataset`
@@ -50,7 +54,7 @@ The images vary in resolution and format (`.jpg`, .`jpeg`, `.tif`, `.png`), so p
 ## Project Structure
 
 ```
-brain_tumor_cnn/
+image-rec/
 │
 ├── dataset/
 │   ├── yes/
@@ -63,7 +67,7 @@ brain_tumor_cnn/
 ├── models/
 │   └── *.keras (generated after training model)
 │
-├── notebooks/
+├── notebook/
 │   └── tumor_cnn.ipynb
 │
 ├── src/ 
@@ -76,8 +80,34 @@ brain_tumor_cnn/
 │   ├── loss_plot.png
 │   └── confusion_matrix.png
 │
+├── requirements.txt
+│
 └── README.md
 ```
+
+## Running the Project
+### 1. Install dependencies
+```bash
+pip install -r requirements.txt
+or
+python -m pip install -r requirements.txt
+```
+
+### 2. Train a model
+```
+cd src
+python train_model.py
+```
+Follow the prompts to select activation functions. The trained model will be saved to `models/` automatically.
+
+### 3. Evaluate a model
+```
+cd src
+python eval_model.py
+```
+Follow the prompt to select a saved model from `models/` (number input, list of models will pop up). Output loss, accuracy, classification report, confusion matrix, and misclassified image grid.
+
+See [Result Section](#result) for our result.
 
 ## Source Files
 ### 1. `model.py`
@@ -88,9 +118,9 @@ A prototype training script that builds, trains, and evaluates the CNN in a sing
 - Loads training (80%) and validation (20%) splits from `dataset`
 - Normalize pixel values to [0,1]
 - Prompts the user to select activation functions at runtime
-- Builds an trains the CNN for 15 epochs
+- Builds and trains the CNN for 15 epochs
 - Prints a classification report on the validation set
-- Collects misclassified validation images with their true/predicted labesl and confidence scores
+- Collects misclassified validation images with their true/predicted labels and confidence scores
 
 **How to run:**
 ```bash
@@ -104,7 +134,7 @@ Enter Conv activation (relu/tanh/elu):
 Enter Dense activation (relu/tanh/elu):
 Enter Output activation (sigmoid/softmax):
 ```
-Invalid inpus fall back to defaults (as follows): `relu`, `relu`, `sigmoid`
+Invalid inputs fall back to defaults (as follows): `relu`, `relu`, `sigmoid`
 
 **Output activation affects loss function:**
 |  **Output**  |  **Units**   |  **Loss** |
@@ -170,11 +200,11 @@ Loads a saved model and runs a full evaluation against the eval dataset.
 **What it does:**
 - Loads images from `../eval_dataset/`
 - Lists all `.keras` / `.h5` models in `../models/` and prompts user to select one
-- Evaluations the selected model (loss + accuracy)
+- Evaluates the selected model (loss + accuracy)
 - Prints a full classification report (precision, recall, F1)
-- Diplays a confusion matrix plot
-- Identified and prints all misclassified images with true/predicted labels
-- Diplays all misclassified images in a matplotlib grid
+- Displays a confusion matrix plot
+- Identifies and prints all misclassified images with true/predicted labels
+- Displays all misclassified images in a matplotlib grid
 
 **How to run:**
 ```bash
@@ -199,13 +229,47 @@ Sigmoid threshold:   0.35
 
 **Output:**
 - Eval loss and accuracy
-- Per-class precisioin, recall, F1-score
+- Per-class precision, recall, F1-score
 - Confusion matrix (visual)
 - List + grid plot of all misclassified images
 
+## Result
+### Training Result (typical)
+This training result is based on running the config combination of: `relu` + `relu` + `sigmoid`
+```
+Final train accuracy:  0.9449
+Final val accuracy:    0.9634
+Final train loss:      0.1794
+Final val loss:        0.1072
+```
+
+### Evaluation Result (Using trained model above)
+This evaluation result is based on the model above (`tumor_cnn_relu_relu_sigmoid.keras`).
+```
+              precision    recall  f1-score   support
+
+          no       0.94      0.97      0.95        98
+         yes       0.98      0.96      0.97       155
+
+    accuracy                           0.96       253
+   macro avg       0.96      0.97      0.96       253
+weighted avg       0.96      0.96      0.96       253
+
+~\image-rec\eval_dataset\no\N11.jpg | True: no | Pred: yes
+~\image-rec\eval_dataset\no\N15.jpg | True: no | Pred: yes
+~\image-rec\eval_dataset\no\No16.jpg | True: no | Pred: yes
+~\image-rec\eval_dataset\yes\Y187.jpg | True: yes | Pred: no
+~\image-rec\eval_dataset\yes\Y194.jpg | True: yes | Pred: no
+~\image-rec\eval_dataset\yes\Y22.jpg | True: yes | Pred: no
+~\image-rec\eval_dataset\yes\Y247.JPG | True: yes | Pred: no
+~\image-rec\eval_dataset\yes\Y248.JPG | True: yes | Pred: no
+~\image-rec\eval_dataset\yes\Y252.jpg | True: yes | Pred: no
+Total Misclassified images: 9
+```
+
 ---
 
-## Jupyter Notebook contents
+## Jupyter Notebook `tumor_cnn.ipynb`
 ### Model Architecture
 The model is a custom CNN designed for grayscale MRI images.
 
@@ -241,34 +305,20 @@ Key design decisions:
 
 Before training, images are processed as follows:
 
-1. Resizing
+#### 1. Resizing
 
-All images are resized to:
-```
-224 x 224
-```
+All images are resized to: `224 x 224`
 
-2. Normalization
+#### 2. Normalization
 
-Pixel values are scaled:
-```
-pixel / 255
-```
+Pixel values are scaled: `pixel / 255`
 
-3. Automatic dataset split
+#### 3. Automatic dataset split
 
-The dataset is split into:
-```
-80% Training
-20% Validation
-```
-
-using Tensorflow's `image_dataset_from_directory`.
+The dataset is split into: `80% Training / 20% Validation`. Using Tensorflow's `image_dataset_from_directory`.
 
 ### Training
-Training is performed in the notebook.
-
-Typical parameters:
+**Typical parameters:**
 ```
 Batch size: 16
 Epochs: 15
@@ -276,14 +326,14 @@ Optimizer: Adam
 Loss: Binary Crossentropy
 ```
 
-Training output includes:
+**Training output includes:**
 - training accuracy
 - validation accuracy
 - training loss
 - validation loss
 
 ### Evaluation Metrics
-The model is evaluated using:
+**The model is evaluated using:**
 - Accuracy
 - Precision
 - Recall
@@ -300,10 +350,9 @@ yes      0.85      0.91      0.88        32
 accuracy                           0.84        50
 ```
 
-Interpretation:
-
+**Interpretation:**
 - The model performs well at detecting tumor images
-- Slightly weaker performance occurs when identifying non-tumor cases\
+- Slightly weaker performance occurs when identifying non-tumor cases
 
 ### Visualizing Model Performance
 The notebook generates visualizations including:
@@ -334,10 +383,10 @@ Misclassified images can be displayed with:
 
 This helps analyze model weaknesses.
 
-### Running the Project
+### Running the Jupyter Notebook
 1. Install dependencies
 ```bash
-pip install tensorflow numpy matplotlib scikit-learn pillow pandas
+pip install tensorflow numpy matplotlib scikit-learn pillow
 ```
 
 2. Launch the notebook
@@ -352,27 +401,18 @@ Run cells sequentially to:
 - evaluate the results
 
 ### Testing New Images
-New MRI images can be evaluated by:
+**New MRI images can be evaluated by:**
 1. Loading the trained model
 2. Preprocessing the image
 3. Running prediction
 
-Steps include:
+**Steps include:**
 ```
 resize image -> normalize -> predict -> threshold at 0.5
 ```
 
-Prediction output example:
+**Prediction output example:**
 ```
 Prediction: yes (tumor)
 Confidence: 0.91
 ```
-
-## Educational Purpose
-This project demonstrates:
-- CNN design for medical image classification
-- dataset preprocessing
-- model evaluation techniques
-- debugging misclassifications
-
-It is intended for academic and research learning purposes only, not clinical use.
