@@ -30,16 +30,20 @@ eval_dataset/  → Evaluation dataset folder
 **Training Dataset**
 |  **Class**   |  **Images**  |
 |--------------|--------------|
-|Tumor (`yes`) |  155         |
-|No Tumor (`no`)| 98          |
-|**Total**     |  253         |
+|Tumor (`yes`) |  2,513       |
+|No Tumor (`no`)| 2,087       |
+|**Total**     |  4,600       |
+
+Kaggle Link: <https://www.kaggle.com/datasets/preetviradiya/brian-tumor-dataset>
 
 **Evaluation Dataset**
 |  **Class**   |  **Images**  |
 |--------------|--------------|
-|Tumor (`yes`) |  2,668       |
-|No Tumor (`no`)| 2,158       |
-|**Total**     |  4,853       |
+|Tumor (`yes`) |  155         |
+|No Tumor (`no`)| 98          |
+|**Total**     |  253         |
+
+Kaggle Link: <https://www.kaggle.com/datasets/navoneel/brain-mri-images-for-brain-tumor-detection>
 
 The images vary in resolution and format (`.jpg`, .`jpeg`, `.tif`, `.png`), so preprocessing standardizes them before training.
 
