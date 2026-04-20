@@ -16,7 +16,10 @@ BATCH_SIZE = 16
 SEED = 123
 
 # Define dataset path
-dataset_path = "..\\dataset"
+_src_dir = os.path.dirname(os.path.abspath(__file__))
+_root_dir = os.path.dirname(_src_dir)
+
+dataset = os.path.join(_root_dir, "eval_dataset")
 
 # Lists to store image sizes and classification results
 sizes = []
@@ -25,7 +28,7 @@ y_pred = []
 
 # Read images from each class folder and collect original image sizes
 for label in ["yes", "no"]:
-    folder = os.path.join(dataset_path, label)
+    folder = os.path.join(dataset, label)
 
     for file in os.listdir(folder):
         filepath = os.path.join(folder, file)
@@ -52,7 +55,7 @@ size_counts = Counter(sizes)
 # validation_split=0.2 means 80% training and 20% validation
 # color_mode="grayscale" loads images with one channel instead of RGB
 train_ds = tf.keras.utils.image_dataset_from_directory(
-    dataset_path,
+    dataset,
     validation_split=0.2,
     subset="training",
     seed=SEED,
@@ -63,7 +66,7 @@ train_ds = tf.keras.utils.image_dataset_from_directory(
 
 # Create the validation dataset using the same split settings
 val_ds = tf.keras.utils.image_dataset_from_directory(
-    dataset_path,
+    dataset,
     validation_split=0.2,
     subset="validation",
     seed=SEED,
