@@ -16,7 +16,10 @@ BATCH_SIZE = 16
 SEED = 123
 
 # Define dataset path
-dataset_path = "..\\dataset"
+_src_dir = os.path.dirname(os.path.abspath(__file__))
+_root_dir = os.path.dirname(_src_dir)
+
+dataset = os.path.join(_root_dir, "eval_dataset")
 
 # Lists to store image sizes and classification results
 sizes = []
@@ -25,7 +28,7 @@ y_pred = []
 
 # Read images from each class folder and collect original image sizes
 for label in ["yes", "no"]:
-    folder = os.path.join(dataset_path, label)
+    folder = os.path.join(dataset, label)
 
     for file in os.listdir(folder):
         filepath = os.path.join(folder, file)
@@ -52,7 +55,7 @@ size_counts = Counter(sizes)
 # validation_split=0.2 means 80% training and 20% validation
 # color_mode="grayscale" loads images with one channel instead of RGB
 train_ds = tf.keras.utils.image_dataset_from_directory(
-    dataset_path,
+    dataset,
     validation_split=0.2,
     subset="training",
     seed=SEED,
@@ -63,7 +66,7 @@ train_ds = tf.keras.utils.image_dataset_from_directory(
 
 # Create the validation dataset using the same split settings
 val_ds = tf.keras.utils.image_dataset_from_directory(
-    dataset_path,
+    dataset,
     validation_split=0.2,
     subset="validation",
     seed=SEED,
@@ -184,12 +187,13 @@ print("Validation Accuracy:", val_acc)
 
 # Generate predictions for the validation set and collect true/predicted labels
 for images, labels in val_ds:
-    predictions = model.predict(images)
+    predictions = model.predict(images, verbose=0)
 
-    # Convert predicted probabilities into class labels using 0.5 threshold
-    predicted_labels = (predictions > 0.5).astype(int).flatten()
+    if output_activation == "softmax":
+        predicted_labels = np.argmax(predictions, axis=1)
+    else:
+        predicted_labels = (predictions > 0.5).astype(int).flatten()
 
-    # Store actual and predicted labels for classification report
     y_true.extend(labels.numpy().astype(int).flatten())
     y_pred.extend(predicted_labels)
 
@@ -204,23 +208,25 @@ misclassified_scores = []
 
 # Identify validation images the model classified incorrectly
 for images, labels in val_ds:
-    predictions = model.predict(images, verbose=0).flatten()
-    predicted_labels = (predictions > 0.5).astype(int)
+    predictions = model.predict(images, verbose=0)
     true_labels = labels.numpy().astype(int).flatten()
+
+    if output_activation == "softmax":
+        predicted_labels = np.argmax(predictions, axis=1)
+    else:
+        predictions = predictions.flatten()
+        predicted_labels = (predictions > 0.5).astype(int)
 
     for i in range(len(images)):
         if predicted_labels[i] != true_labels[i]:
-            # Store the misclassified image
             misclassified_images.append(images[i].numpy())
-
-            # Store the true class label
             misclassified_true.append(true_labels[i])
-
-            # Store the predicted class label
             misclassified_pred.append(predicted_labels[i])
 
-            # Store the model's predicted probability score
-            misclassified_scores.append(predictions[i])
+            if output_activation == "softmax":
+                misclassified_scores.append(predictions[i][predicted_labels[i]])
+            else:
+                misclassified_scores.append(predictions[i])
 
 # Print the total number of misclassified validation images
 print("Total misclassified images:", len(misclassified_images))
