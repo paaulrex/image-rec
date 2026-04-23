@@ -1,6 +1,7 @@
 import tensorflow as tf
 import os
 import argparse
+import matplotlib.pyplot as plt
 
 _src_dir = os.path.dirname(os.path.abspath(__file__))
 _root_dir = os.path.dirname(_src_dir)
@@ -107,6 +108,25 @@ def main():
     verbose=1,
     class_weight=class_weight
   )
+
+  epochs_range = range(args.epoch)
+
+  plt.figure(figsize=(12, 5))
+
+  plt.subplot(1, 2, 1)
+  plt.plot(epochs_range, history.history["accuracy"], label="Train Accuracy")
+  plt.plot(epochs_range, history.history["val_accuracy"], label="Val Accuracy")
+  plt.legend()
+  plt.title(f"Accuracy - {conv_act} + {dense_act} + {out_act}")
+
+  plt.subplot(1, 2, 2)
+  plt.plot(epochs_range, history.history["loss"], label="Train Loss")
+  plt.plot(epochs_range, history.history["val_loss"], label="Val Loss")
+  plt.legend()
+  plt.title(f"Loss - {conv_act} + {dense_act} + {out_act}")
+
+  plt.tight_layout()
+  plt.show()
 
   print(f"\nFinal train accuracy: {history.history['accuracy'][-1]:.4f}")
   print(f"Final val accuracy:   {history.history['val_accuracy'][-1]:.4f}")
