@@ -137,7 +137,7 @@ def main():
   output_path = os.path.join(model_dir, model_name)
   os.makedirs(model_dir, exist_ok=True)
   model.save(output_path)
-  print(f"Model saved to {output_path}")
+  print(f"Model saved to {os.path.relpath(output_path)}")
 
 if __name__ == "__main__":
   main()

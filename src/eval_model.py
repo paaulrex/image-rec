@@ -81,7 +81,7 @@ def main():
     if true != pred:
       path, _ = image_files[idx]
       misclassified.append((path, true, pred))
-      print(f"  {path} | True: {class_names[true]} | Pred: {class_names[pred]}")
+      print(f"  {os.path.relpath(path)} | True: {class_names[true]} | Pred: {class_names[pred]}")
   print(f"Total Misclassified images: {len(misclassified)}")
 
   if misclassified:
